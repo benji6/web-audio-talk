@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Web Audo API</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css" id="theme">
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+	<style>
+		.present {
+			background-color: rgba(0, 0, 0, 0.80);
+		}
+		.present p, li {
+			text-align: left;
+			margin-left: 1rem;
+		}
+		.center { text-align: center !important; }
+	</style>
+	<script>
+		audioContext = new AudioContext()
+		gain = audioContext.createGain()
+		gain.gain.value = 0.2
+		gain.connect(audioContext.destination)
+	</script>
+</head>
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<h1>Web Audio</h1>
+				<h3>Let's Make Some Noise!</h3>
+				<p class="center"><small>
+					{"name": "Ben Hall", "GitHub": "benji6"}
+				</small></p>
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Overview
+
+				A crash course in audio synthesis and web audio
+
+				I'm going to touch on a lot of deep topics, so the aim is less to fully convey understanding and more to pique an interest
+
+				- Music theory
+				- Web Audio API
+				- Earcons and practical ideas
+				- Full-blown audio synthesis
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Preamble
+
+				The web is silent
+
+				We are only connecting with people through sight
+
+				Audio opens up possiblities for completely new experiences
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Web Audio API
+
+				[https://www.w3.org/TR/webaudio/](https://www.w3.org/TR/webaudio/)
+
+				The specification is fairly stable and most features are implemented in all modern browsers
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## What is sound?
+
+				Vibrations transmitted through an elastic solid or a liquid or gas, with frequencies in the approximate range of 20 to 20,000 hertz, capable of being detected by human organs of hearing. (The Free Dictionary)
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Everything is ~~awesome~~ a wave
+
+				Volume is proportional to amplitude squared and pitch is logarithmically proportional to frequency.
+
+				```
+				   1 -|         ,-'''-.
+				      |      ,-'       `-.
+				      |    ,'             `.
+				      |  ,'                 `.
+				      | /                     \
+				      |/                       \
+				  ----+-------------------------\--------------------------
+				      |          __           __ \          __           /  __
+				      |          ||/2         ||  \        3||/2        /  2||
+				      |                            `.                 ,'
+				      |                              `.             ,'
+				      |                                `-.       ,-'
+				  -1 -|                                   `-,,,-'
+				```
+				<!-- ascii credit: http://ascii.co.uk/art/sine -->
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## All waves are sine waves
+
+				You can construct all waves from sine waves of different pitches. Look up Fourier transforms for more info
+
+				```
+				   1 -|         ,-'''-.
+				      |      ,-'       `-.
+				      |    ,'             `.
+				      |  ,'                 `.
+				      | /                     \
+				      |/                       \
+				  ----+-------------------------\--------------------------
+				      |          __           __ \          __           /  __
+				      |          ||/2         ||  \        3||/2        /  2||
+				      |                            `.                 ,'
+				      |                              `.             ,'
+				      |                                `-.       ,-'
+				  -1 -|                                   `-,,,-'
+				```
+				<!-- ascii credit: http://ascii.co.uk/art/sine -->
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				```
+				      |            /            /
+				      |          / |          / |
+				      |        /   |        /   |
+				  ----+------/-----|------/-----|-- Sawtooth
+				      |    /       |    /       |
+				      |  /         |  /         |
+				      |/           |/           |
+
+				       ____________
+				      |            |
+				      |            |
+				      |            |
+				  ----+------------|------------|-- Square
+				      |            |            |
+				      |            |            |
+				      |            |____________|
+
+
+				      |     /\
+				      |   /    \
+				      | /        \
+				  ----+------------\------------/-- Triangle
+				      |              \        /
+				      |                \    /
+				      |                  \/
+				```
+			</section>
+
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Enough theory!
+
+				### What does that sound like?
+
+				```javascript
+				const audioContext = new AudioContext()
+				const gain = audioContext.createGain()
+				const osc = audioContext.createOscillator()
+				gain.gain.value = 0.2
+				osc.connect(gain).connect(audioContext.destination)
+				osc.start()
+				```
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Gotcha!
+
+				```javascript
+				osc.stop()
+				osc.start() // uh oh!
+				```
+
+				There are quite a few gotchas with web audio...
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Equal temperament
+
+				- Let pitch number 0 be 440Hz
+				- If the octave is incremented the frequency doubles
+				- If the octave is decremented the frequency halves
+				- Each octave is divided into 12 notes
+
+				```javascript
+				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+				```
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## chords
+
+				```javascript
+				const audioContext = new AudioContext()
+				const gain = audioContext.createGain()
+				gain.connect(audioContext.destination)
+				gain.gain.value = 0.2
+				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+				const frequencies = [0, 4, 7].map(frequency)
+				frequencies.forEach(freq => {
+					const osc = audioContext.createOscillator()
+					osc.frequency.value = freq
+					osc.connect(gain)
+					osc.start()
+				})
+				```
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Timing
+				why not setTimeout???
+
+				What time is it?
+
+				```javascript
+				const {currentTime} = new AudioContext()
+				```
+
+				It's in seconds, just like all the other JS time APIs! (gotcha!)
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Let's arpeggiate
+
+				```javascript
+				const audioContext = new AudioContext()
+				const gain = audioContext.createGain()
+				gain.connect(audioContext.destination)
+				gain.gain.value = 0.2
+				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+				const frequencies = [0, 4, 7].map(frequency)
+				const noteTime = 0.5
+				frequencies.forEach((freq, i) => {
+					const osc = audioContext.createOscillator()
+					osc.frequency.value = freq
+					osc.connect(gain)
+					osc.start(audioContext.currentTime + i * noteTime)
+					osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+				})
+				```
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Let's arpeggiate some more
+
+				```javascript
+				const cycle = xs => ({[Symbol.iterator]: function * () {
+					while (true) yield* xs
+				}})
+				const take = (a, xs) => ({[Symbol.iterator]: function * () {
+				  for (var x of xs) if (!a--) return; else yield x
+				}})
+				const audioContext = new AudioContext()
+				const gain = audioContext.createGain()
+				gain.connect(audioContext.destination)
+				gain.gain.value = 0.2
+				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+				const frequencies = [0, 4, 7].map(frequency)
+				const noteTime = 0.05
+				;[...take(64, cycle(frequencies.concat([...frequencies].reverse())))].forEach((freq, i) => {
+					const osc = audioContext.createOscillator()
+					osc.frequency.value = freq
+					osc.connect(gain)
+					osc.start(audioContext.currentTime + i * noteTime)
+					osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+				})
+				```
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Further reading
+				http://developer.telerik.com/featured/practical-web-audio/
+			</section>
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<h2>Earcons</h2>
+				<button class='button-1'>Click me</button>
+				<script>
+					document.querySelector('.button-1').onmousedown = _ => {
+						const osc = audioContext.createOscillator()
+						osc.connect(gain)
+						osc.start()
+						osc.frequency.value = 880
+						osc.stop(audioContext.currentTime + 0.05)
+					}
+					document.querySelector('.button-1').onmouseup = _ => {
+						const osc = audioContext.createOscillator()
+						osc.connect(gain)
+						osc.start()
+						osc.frequency.value = 440
+						osc.stop(audioContext.currentTime + 0.05)
+					}
+				</script>
+			</section>
+		</div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+
+		// Full list of configuration options available at:
+		// https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+
+			transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+			// Optional reveal.js plugins
+			dependencies: [
+				{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+				{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/zoom-js/zoom.js', async: true },
+				{ src: 'plugin/notes/notes.js', async: true }
+			]
+		});
+
+	</script>
+
+</body>
+</html>
