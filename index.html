@@ -23,6 +23,7 @@
 		gain = audioContext.createGain()
 		gain.gain.value = 0.2
 		gain.connect(audioContext.destination)
+		frequency = pitch => 440 * Math.pow(2, pitch / 12)
 	</script>
 </head>
 <body>
@@ -30,7 +31,7 @@
 		<div class="slides">
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<h1>Web Audio</h1>
-				<h3>Let's Make Some Noise!</h3>
+				<h3>Let there be sound!</h3>
 				<p class="center"><small>
 					{"name": "Ben Hall", "GitHub": "benji6"}
 				</small></p>
@@ -187,7 +188,6 @@
 				const gain = audioContext.createGain()
 				gain.connect(audioContext.destination)
 				gain.gain.value = 0.2
-				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
 				const frequencies = [0, 4, 7].map(frequency)
 				frequencies.forEach(freq => {
 					const osc = audioContext.createOscillator()
@@ -199,7 +199,6 @@
 			</section>
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				## Timing
-				why not setTimeout???
 
 				What time is it?
 
@@ -207,77 +206,182 @@
 				const {currentTime} = new AudioContext()
 				```
 
-				It's in seconds, just like all the other JS time APIs! (gotcha!)
-			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				## Let's arpeggiate
+				Time in seconds since AudioContext instance was created.
 
-				```javascript
-				const audioContext = new AudioContext()
-				const gain = audioContext.createGain()
-				gain.connect(audioContext.destination)
-				gain.gain.value = 0.2
-				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
-				const frequencies = [0, 4, 7].map(frequency)
-				const noteTime = 0.5
-				frequencies.forEach((freq, i) => {
-					const osc = audioContext.createOscillator()
-					osc.frequency.value = freq
-					osc.connect(gain)
-					osc.start(audioContext.currentTime + i * noteTime)
-					osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-				})
-				```
+				Just like all the other JS timing APIs it is in seconds. Oh wait...
 			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				## Let's arpeggiate some more
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<div data-markdown>
+					## Scheduling
 
-				```javascript
-				const cycle = xs => ({[Symbol.iterator]: function * () {
-					while (true) yield* xs
-				}})
-				const take = (a, xs) => ({[Symbol.iterator]: function * () {
-				  for (var x of xs) if (!a--) return; else yield x
-				}})
-				const audioContext = new AudioContext()
-				const gain = audioContext.createGain()
-				gain.connect(audioContext.destination)
-				gain.gain.value = 0.2
-				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
-				const frequencies = [0, 4, 7].map(frequency)
-				const noteTime = 0.05
-				;[...take(64, cycle(frequencies.concat([...frequencies].reverse())))].forEach((freq, i) => {
+					```javascript
 					const osc = audioContext.createOscillator()
-					osc.frequency.value = freq
 					osc.connect(gain)
-					osc.start(audioContext.currentTime + i * noteTime)
-					osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-				})
-				```
+					osc.start(audioContext.currentTime)
+					osc.stop(audioContext.currentTime + 1)
+					```
+				</div>
+				<button onclick="(_ => {
+					const osc = audioContext.createOscillator()
+					osc.connect(gain)
+					osc.start(audioContext.currentTime)
+					osc.stop(audioContext.currentTime + 1)
+				})()">Click me</button>
 			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				# Further reading
-				http://developer.telerik.com/featured/practical-web-audio/
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<div data-markdown>
+					## Let's arpeggiate
+
+					```javascript
+					const frequencies = [0, 4, 7].map(frequency)
+					const noteTime = 0.5
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+					```
+				</div>
+				<button onclick="(_ => {
+					const frequencies = [0, 4, 7].map(frequency)
+					const noteTime = 0.5
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+				})()">Click me</button>
+			</section>
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<div data-markdown>
+					## Let's arpeggiate some more
+
+					```javascript
+					const seed = Array.from(
+						{length: 4},
+						(_, x) => [0, 4, 7].map(y => x * 12 + y)
+					).reduce((a, b) => a.concat(b)).map(frequency)
+					const frequencies = Array.from(
+						{length: 4},
+						_ => seed.concat([...seed].reverse())
+					).reduce((a, b) => a.concat(b))
+					const noteTime = 0.05
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+					```
+				</div>
+				<button onclick="(_ => {
+					const seed = Array.from(
+						{length: 4},
+						(_, x) => [0, 4, 7].map(y => x * 12 + y)
+					).reduce((a, b) => a.concat(b)).map(frequency)
+					const frequencies = Array.from(
+						{length: 4},
+						_ => seed.concat([...seed].reverse())
+					).reduce((a, b) => a.concat(b))
+					const noteTime = 0.05
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+				})()">Click me</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<h2>Earcons</h2>
 				<button class='button-1'>Click me</button>
 				<script>
-					document.querySelector('.button-1').onmousedown = _ => {
-						const osc = audioContext.createOscillator()
-						osc.connect(gain)
-						osc.start()
-						osc.frequency.value = 880
-						osc.stop(audioContext.currentTime + 0.05)
-					}
-					document.querySelector('.button-1').onmouseup = _ => {
-						const osc = audioContext.createOscillator()
-						osc.connect(gain)
-						osc.start()
-						osc.frequency.value = 440
-						osc.stop(audioContext.currentTime + 0.05)
+				document.querySelector('.button-1').onmousedown = _ => {
+					const osc = audioContext.createOscillator()
+					osc.connect(gain)
+					osc.start()
+					osc.frequency.value = 880
+					osc.stop(audioContext.currentTime + 0.05)
+				}
+				document.querySelector('.button-1').onmouseup = _ => {
+					const osc = audioContext.createOscillator()
+					osc.connect(gain)
+					osc.start()
+					osc.frequency.value = 440
+					osc.stop(audioContext.currentTime + 0.05)
+				}
+				</script>
+				<button class='notification'>Click me</button>
+				<script>
+					document.querySelector('.notification').onclick = _ => {
+						const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+						const frequencies = [0, 4, 7].map(frequency)
+						const noteTime = 0.1
+						frequencies.forEach((freq, i) => {
+							const osc = audioContext.createOscillator()
+							osc.frequency.value = freq
+							osc.connect(gain)
+							osc.start(audioContext.currentTime + i * noteTime)
+							osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+						})
 					}
 				</script>
+				<input class="slider" max="10" min="0" type="range">
+				<script>
+				document.querySelector('.slider').oninput = pingFreq
+				const lastPlayedRate = null
+				function pingFreq(e) {
+				    var rate = 100 + (Number(e.target.value) * 64.06);
+				    if (lastPlayedRate != rate) {
+				        playOsc('triangle',rate,0.5,0.05)
+				    }
+				    lastPlayedRate = rate;
+				}
+				function playOsc(type,freq,vol,dur) {
+				    var o = audioContext.createOscillator(), g = audioContext.createGain();
+				    o.type = type;
+				    o.frequency.value = freq;
+				    o.start(audioContext.currentTime);
+				    o.stop(audioContext.currentTime + dur);
+
+				    g.gain.value = vol;
+				    g.gain.setValueAtTime(0, audioContext.currentTime + dur - 0.01);
+				    g.gain.linearRampToValueAtTime(1, audioContext.currentTime + dur - 0.001);
+				    g.gain.linearRampToValueAtTime(0, audioContext.currentTime + dur);
+				    o.connect(g);
+				    g.connect(audioContext.destination);
+				}
+				</script>
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Delay
+
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Subtractive synthesis
+
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Modular synthesis
+
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# FM synthesis
+
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Delay and Verb
+
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				# Further reading
+				http://developer.telerik.com/featured/practical-web-audio/
 			</section>
 		</div>
 	</div>
