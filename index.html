@@ -421,10 +421,90 @@
 				}
 				</script>
 			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				# Delay
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+          # Delay
+          ```javascript
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMajorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+          ```
+        </div>
+        <button onclick="(_ => {
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMajorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+        })()">A Major</button>
+        <button onclick="(_ => {
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMinorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+        })()">A Minor</button>
+      </section>
+      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+        # The audio graph
 
-			</section>
+				We are creating a directional graph of AudioNodes
+
+        ```
+        destination
+          ^       ^
+          |       |
+        delay--|  |
+          ^    |  |
+          |    |  |
+        gain<---  |
+          ^       |
+          |       |
+        source----|
+        ```
+
+      </section>
+      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+        # Audio params
+
+				OK I haven't been straight with you, might have missed something out!
+
+      </section>
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				# Subtractive synthesis
 
