@@ -293,14 +293,14 @@
 					## Let's arpeggiate some more
 
 					```javascript
-					const seed = Array.from(
-						{length: 4},
-						(_, x) => [0, 4, 7].map(y => x * 12 + y)
-					).reduce((a, b) => a.concat(b)).map(frequency)
-					const frequencies = Array.from(
-						{length: 4},
-						_ => seed.concat([...seed].reverse())
-					).reduce((a, b) => a.concat(b))
+					const oneToFour = Array.from({length: 4}, (_, i) => i)
+					const seed = oneToFour
+						.map(i => aMajorPitches.map(pitch => i * 12 + pitch))
+						.reduce((a, b) => a.concat(b))
+						.map(frequency)
+					const frequencies = oneToFour
+						.map(_ => seed.concat([...seed].reverse()))
+						.reduce((a, b) => a.concat(b))
 					const noteTime = 0.05
 					frequencies.forEach((freq, i) => {
 						const osc = audioContext.createOscillator()
@@ -312,14 +312,14 @@
 					```
 				</div>
 				<button onclick="(_ => {
-					const seed = Array.from(
-						{length: 4},
-						(_, x) => [0, 4, 7].map(y => x * 12 + y)
-					).reduce((a, b) => a.concat(b)).map(frequency)
-					const frequencies = Array.from(
-						{length: 4},
-						_ => seed.concat([...seed].reverse())
-					).reduce((a, b) => a.concat(b))
+					const oneToFour = Array.from({length: 4}, (_, i) => i)
+					const seed = oneToFour
+						.map(i => aMajorPitches.map(pitch => i * 12 + pitch))
+						.reduce((a, b) => a.concat(b))
+						.map(frequency)
+					const frequencies = oneToFour
+						.map(_ => seed.concat([...seed].reverse()))
+						.reduce((a, b) => a.concat(b))
 					const noteTime = 0.05
 					frequencies.forEach((freq, i) => {
 						const osc = audioContext.createOscillator()
@@ -329,55 +329,85 @@
 						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
 					})
 				})()">A Major</button>
+				<button onclick="(_ => {
+					const oneToFour = Array.from({length: 4}, (_, i) => i)
+					const seed = oneToFour
+						.map(i => aMinorPitches.map(pitch => i * 12 + pitch))
+						.reduce((a, b) => a.concat(b))
+						.map(frequency)
+					const frequencies = oneToFour
+						.map(_ => seed.concat([...seed].reverse()))
+						.reduce((a, b) => a.concat(b))
+					const noteTime = 0.05
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+				})()">A Minor</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<h2>Earcons</h2>
-				<button class='button-1'>Click me</button>
+				<button
+					onmousedown="(_ => {
+						const osc = audioContext.createOscillator()
+						osc.connect(gain)
+						osc.start()
+						osc.frequency.value = 880
+						osc.stop(audioContext.currentTime + 0.05)
+					})()"
+					onmouseup="(_ => {
+						const osc = audioContext.createOscillator()
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + 0.05)
+						osc.frequency.value = 440
+						osc.stop(audioContext.currentTime + 0.1)
+					})()"
+				>Click me</button>
+				<button onclick="(_ => {
+					const frequency = pitch => 440 * Math.pow(2, pitch / 12)
+					const frequencies = [0, 4, 7].map(frequency)
+					const noteTime = 0.1
+					frequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+				})()">Click me</button>
+				<input
+					class="slider-0"
+					max="10"
+					min="0"
+					type="range"
+				>
+				<input
+					class="slider-1"
+					max="10"
+					min="0"
+					type="range"
+				>
 				<script>
-				document.querySelector('.button-1').onmousedown = _ => {
-					const osc = audioContext.createOscillator()
-					osc.connect(gain)
-					osc.start()
-					osc.frequency.value = 880
-					osc.stop(audioContext.currentTime + 0.05)
-				}
-				document.querySelector('.button-1').onmouseup = _ => {
-					const osc = audioContext.createOscillator()
-					osc.connect(gain)
-					osc.start()
-					osc.frequency.value = 440
-					osc.stop(audioContext.currentTime + 0.05)
-				}
-				</script>
-				<button class='notification'>Click me</button>
-				<script>
-					document.querySelector('.notification').onclick = _ => {
-						const frequency = pitch => 440 * Math.pow(2, pitch / 12)
-						const frequencies = [0, 4, 7].map(frequency)
-						const noteTime = 0.1
-						frequencies.forEach((freq, i) => {
-							const osc = audioContext.createOscillator()
-							osc.frequency.value = freq
-							osc.connect(gain)
-							osc.start(audioContext.currentTime + i * noteTime)
-							osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-						})
-					}
-				</script>
-				<input class="slider" max="10" min="0" type="range">
-				<script>
-				document.querySelector('.slider').oninput = pingFreq
-				const lastPlayedRate = null
+				document.querySelector('.slider-0').oninput = pingFreq
+				document.querySelector('.slider-1').oninput = pingVol
+				var lastPlayedRate = null
 				function pingFreq(e) {
+			    var vol = Math.pow(Number(e.target.value) / 10, 2);
+	        playOsc('sine', 380,vol,0.05)
+				}
+				function pingVol (e) {
 				    var rate = 100 + (Number(e.target.value) * 64.06);
 				    if (lastPlayedRate != rate) {
-				        playOsc('triangle',rate,0.5,0.05)
+				        playOsc('triangle', rate,0.5,0.05)
 				    }
 				    lastPlayedRate = rate;
 				}
-				function playOsc(type,freq,vol,dur) {
+				function playOsc(type, freq,vol,dur) {
 				    var o = audioContext.createOscillator(), g = audioContext.createGain();
-				    o.type = type;
+				    o.type = type
 				    o.frequency.value = freq;
 				    o.start(audioContext.currentTime);
 				    o.stop(audioContext.currentTime + dur);
