@@ -28,6 +28,10 @@
 		gain.gain.value = 0.2
 		gain.connect(audioContext.destination)
 		frequency = pitch => 440 * Math.pow(2, pitch / 12)
+		aMajorPitches = [0, 4, 7]
+		aMinorPitches = [0, 3, 7]
+		aMajorFrequencies = aMajorPitches.map(frequency)
+		aMinorFrequencies = aMinorPitches.map(frequency)
 	</script>
 </head>
 <body>
@@ -209,31 +213,52 @@
 				const frequency = pitch => 440 * Math.pow(2, pitch / 12)
 				```
 			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				## chords
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<div data-markdown>
+					## chords
 
-				```javascript
-				const audioContext = new AudioContext()
-				const gain = audioContext.createGain()
-				gain.connect(audioContext.destination)
-				gain.gain.value = 0.2
-				const frequencies = [0, 4, 7].map(frequency)
-				frequencies.forEach(freq => {
-					const osc = audioContext.createOscillator()
-					osc.frequency.value = freq
-					osc.connect(gain)
-					osc.start()
-				})
-				```
+					```javascript
+					const aMajorPitches = [0, 4, 7]
+					const aMinorPitches = [0, 3, 7]
+					const aMajorFrequencies = aMajorPitches.map(frequency)
+					const stopTime = audioContext.currentTime + 1
+					aMajorFrequencies.forEach(freq => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start()
+						osc.stop(audioContext.currentTime + 1)
+					})
+					```
+				</div>
+				<button onclick="(_ => {
+					const stopTime = audioContext.currentTime + 1
+					aMajorFrequencies.forEach(freq => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start()
+						osc.stop(audioContext.currentTime + 1)
+					})
+				})()">A Major</button>
+				<button onclick="(_ => {
+					const stopTime = audioContext.currentTime + 1
+					aMinorFrequencies.forEach(freq => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start()
+						osc.stop(audioContext.currentTime + 1)
+					})
+				})()">A Minor</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<div data-markdown>
 					## Let's arpeggiate
 
 					```javascript
-					const frequencies = [0, 4, 7].map(frequency)
 					const noteTime = 0.5
-					frequencies.forEach((freq, i) => {
+					aMajorFrequencies.forEach((freq, i) => {
 						const osc = audioContext.createOscillator()
 						osc.frequency.value = freq
 						osc.connect(gain)
@@ -243,16 +268,25 @@
 					```
 				</div>
 				<button onclick="(_ => {
-					const frequencies = [0, 4, 7].map(frequency)
 					const noteTime = 0.5
-					frequencies.forEach((freq, i) => {
+					aMajorFrequencies.forEach((freq, i) => {
 						const osc = audioContext.createOscillator()
 						osc.frequency.value = freq
 						osc.connect(gain)
 						osc.start(audioContext.currentTime + i * noteTime)
 						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
 					})
-				})()">Click me</button>
+				})()">A Major</button>
+				<button onclick="(_ => {
+					const noteTime = 0.5
+					aMinorFrequencies.forEach((freq, i) => {
+						const osc = audioContext.createOscillator()
+						osc.frequency.value = freq
+						osc.connect(gain)
+						osc.start(audioContext.currentTime + i * noteTime)
+						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+					})
+				})()">A Minor</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<div data-markdown>
@@ -294,7 +328,7 @@
 						osc.start(audioContext.currentTime + i * noteTime)
 						osc.stop(audioContext.currentTime + (i + 1) * noteTime)
 					})
-				})()">Click me</button>
+				})()">A Major</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<h2>Earcons</h2>
