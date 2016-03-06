@@ -17,6 +17,10 @@
 			margin-left: 1rem;
 		}
 		.center { text-align: center !important; }
+		.navigate-down { display: none; }
+		.navigate-left { display: none; }
+		.navigate-right { display: none; }
+		.navigate-up { display: none; }
 	</style>
 	<script>
 		audioContext = new AudioContext()
@@ -39,10 +43,6 @@
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				## Overview
 
-				A crash course in audio synthesis and web audio
-
-				I'm going to touch on a lot of deep topics, so the aim is less to fully convey understanding and more to pique an interest
-
 				- Music theory
 				- Web Audio API
 				- Earcons and practical ideas
@@ -62,7 +62,7 @@
 
 				[https://www.w3.org/TR/webaudio/](https://www.w3.org/TR/webaudio/)
 
-				The specification is fairly stable and most features are implemented in all modern browsers
+				The specification is fairly stable and most features are implemented in modern browsers
 			</section>
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				## What is sound?
@@ -72,7 +72,7 @@
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				## Everything is ~~awesome~~ a wave
 
-				Volume is proportional to amplitude squared and pitch is logarithmically proportional to frequency.
+				Volume is proportional to amplitude squared and pitch is logarithmically proportional to frequency
 
 				```
 				   1 -|         ,-'''-.
@@ -382,6 +382,8 @@
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				# Further reading
 				http://developer.telerik.com/featured/practical-web-audio/
+
+				http://blog.chrislowis.co.uk/waw.html
 			</section>
 		</div>
 	</div>
