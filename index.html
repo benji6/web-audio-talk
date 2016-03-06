@@ -169,6 +169,35 @@
 				There are quite a few gotchas with web audio...
 			</section>
 			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
+				## Timing
+
+				What time is it?
+
+				```javascript
+				const {currentTime} = new AudioContext()
+				```
+
+				Time in seconds (to be consistent with the other JS timing APIs!) since AudioContext instance was created
+			</section>
+			<section data-background="assets/green-and-blue-sound-waves.jpg">
+				<div data-markdown>
+					## Scheduling
+
+					```javascript
+					const osc = audioContext.createOscillator()
+					osc.connect(gain)
+					osc.start(audioContext.currentTime)
+					osc.stop(audioContext.currentTime + 1)
+					```
+				</div>
+				<button onclick="(_ => {
+					const osc = audioContext.createOscillator()
+					osc.connect(gain)
+					osc.start(audioContext.currentTime)
+					osc.stop(audioContext.currentTime + 1)
+				})()">Click me</button>
+			</section>
+			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
 				## Equal temperament
 
 				- Let pitch number 0 be 440Hz
@@ -196,37 +225,6 @@
 					osc.start()
 				})
 				```
-			</section>
-			<section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-				## Timing
-
-				What time is it?
-
-				```javascript
-				const {currentTime} = new AudioContext()
-				```
-
-				Time in seconds since AudioContext instance was created.
-
-				Just like all the other JS timing APIs it is in seconds. Oh wait...
-			</section>
-			<section data-background="assets/green-and-blue-sound-waves.jpg">
-				<div data-markdown>
-					## Scheduling
-
-					```javascript
-					const osc = audioContext.createOscillator()
-					osc.connect(gain)
-					osc.start(audioContext.currentTime)
-					osc.stop(audioContext.currentTime + 1)
-					```
-				</div>
-				<button onclick="(_ => {
-					const osc = audioContext.createOscillator()
-					osc.connect(gain)
-					osc.start(audioContext.currentTime)
-					osc.stop(audioContext.currentTime + 1)
-				})()">Click me</button>
 			</section>
 			<section data-background="assets/green-and-blue-sound-waves.jpg">
 				<div data-markdown>
