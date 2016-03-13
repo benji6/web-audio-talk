@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="lib/css/zenburn.css">
   <style>
     .present {
-      background-color: rgba(0, 0, 0, 0.80);
+      background-color: rgba(0, 0, 0, 0.90);
     }
     .present p, li {
       text-align: left;
@@ -39,7 +39,7 @@
     <div class="slides">
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <h1>Web Audio</h1>
-        <h3>Let there be sound!</h3>
+        <h3>Let there be sound</h3>
         <p class="center"><small>
           {"name": "Ben Hall", "GitHub": "benji6"}
         </small></p>
@@ -73,26 +73,26 @@
 
         Vibrations transmitted through an elastic solid or a liquid or gas, with frequencies in the approximate range of 20 to 20,000 hertz, capable of being detected by human organs of hearing. (The Free Dictionary)
       </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        ## Everything is ~~awesome~~ a wave
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <h2>Everything is a wave</h2>
 
-        Volume is proportional to amplitude squared and pitch is logarithmically proportional to frequency
+        <p>Volume is proportional to amplitude squared and pitch is logarithmically proportional to frequency</p>
 
-        ```
-           1 -|         ,-'''-.
-              |      ,-'       `-.
-              |    ,'             `.
-              |  ,'                 `.
-              | /                     \
-              |/                       \
-          ----+-------------------------\--------------------------
-              |          __           __ \          __           /  __
-              |          ||/2         ||  \        3||/2        /  2||
-              |                            `.                 ,'
-              |                              `.             ,'
-              |                                `-.       ,-'
-          -1 -|                                   `-,,,-'
-        ```
+        <pre>
+     1 -|         ,-'''-.
+        |      ,-'       `-.
+        |    ,'             `.
+        |  ,'                 `.
+        | /                     \
+        |/                       \
+    ----+-------------------------\--------------------------
+        |          __           __ \          __           /  __
+        |          ||/2         ||  \        3||/2        /  2||
+        |                            `.                 ,'
+        |                              `.             ,'
+        |                                `-.       ,-'
+    -1 -|                                   `-,,,-'
+				</pre>
         <!-- ascii credit: http://ascii.co.uk/art/sine -->
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
@@ -493,35 +493,184 @@
 				</div>
 
       </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # Audio params
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+## Audio params
+Some AudioNode properties are AudioParams
+```javascript
+gain.gain.value = 0
+osc.frequency.value = 440
+delay.delayTime.value = 0.2
+```
+        </div>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+          ## AudioParams
+          AudioParams have a couple of cool methods for controlling their values over time
+```javascript
+const osc = audioContext.createOscillator()
+osc.connect(gain)
+const {currentTime} = audioContext
+osc.frequency.setValueAtTime(110, currentTime)
+osc.frequency.linearRampToValueAtTime(1760, currentTime + 1)
+osc.start(currentTime)
+osc.stop(currentTime + 1)
+```
+        </div>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          osc.connect(gain)
+          const {currentTime} = audioContext
+          osc.frequency.setValueAtTime(55, currentTime)
+          osc.frequency.linearRampToValueAtTime(1760, currentTime + 1)
+          osc.start(currentTime)
+          osc.stop(currentTime + 1)
+        })()">Up</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          osc.connect(gain)
+          osc.type = 'square'
+          const {currentTime} = audioContext
+          osc.frequency.setValueAtTime(1760, currentTime)
+          osc.frequency.linearRampToValueAtTime(55, currentTime + 1)
+          osc.start(currentTime)
+          osc.stop(currentTime + 1)
+        })()">Down</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+          ## AudioParams
+          Gotcha!
+```javascript
+const osc = audioContext.createOscillator()
+osc.connect(gain)
+const {currentTime} = audioContext
+osc.frequency.value = 440
+osc.frequency.linearRampToValueAtTime(880, currentTime + 1)
+osc.start(currentTime)
+osc.stop(currentTime + 1)
+```
+        </div>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          osc.connect(gain)
+          const {currentTime} = audioContext
+          osc.frequency.value = 440
+          osc.frequency.linearRampToValueAtTime(880, currentTime + 1)
+          osc.start(currentTime)
+          osc.stop(currentTime + 1)
+        })()">Uh oh</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+          ## AudioParams
+          AudioParams can also be connection destinations
+```javascript
+const osc = audioContext.createOscillator()
+const lfoGain = audioContext.createGain()
+const lfo = audioContext.createOscillator()
+osc.connect(gain)
+lfo.frequency.value = 1
+lfo.connect(lfoGain)
+lfoGain.connect(osc.frequency)
+lfoGain.gain.value = 1000
+lfo.start()
+osc.start()
+osc.stop(audioContext.currentTime + 3)
+```
+        </div>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const lfoGain = audioContext.createGain()
+          const lfo = audioContext.createOscillator()
+          osc.connect(gain)
+          lfo.frequency.value = 1
+          lfo.connect(lfoGain)
+          lfoGain.connect(osc.frequency)
+          lfoGain.gain.value = 1000
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 3)
+        })()">Sine LFO</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const lfoGain = audioContext.createGain()
+          const lfo = audioContext.createOscillator()
+          osc.connect(gain)
+          lfo.frequency.value = 1
+          lfo.type = 'square'
+          lfo.connect(lfoGain)
+          lfoGain.connect(osc.frequency)
+          lfoGain.gain.value = 1000
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 3)
+        })()">Square LFO</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const lfoGain = audioContext.createGain()
+          const lfo = audioContext.createOscillator()
+          osc.connect(gain)
+          lfo.frequency.value = 10
+          lfo.connect(lfoGain)
+          lfoGain.connect(osc.frequency)
+          lfoGain.gain.value = 1000
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 3)
+        })()">Fast LFO</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const lfoGain = audioContext.createGain()
+          const lfo = audioContext.createOscillator()
+          osc.connect(gain)
+          lfo.frequency.value = 1000
+          lfo.connect(lfoGain)
+          lfoGain.connect(osc.frequency)
+          lfoGain.gain.value = 1000
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 3)
+        })()">Very Fast LFO</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
 
-        OK I kinda skipped something out!
+        <div data-markdown>
 
-				```javascript
+              BiquadFilter (from that woosh sound in dreamy pads to that wah wah sound in Hendrix's guitar solos)
+              Convolver (reverb)
+              Delay (ECHO Echo echo...)
+              DynamicsCompressor (make loud things quiter)
+              Panner (left ear <---> right ear)
+              WaveShaper (distortion - think Nirvana)
 
-				gain.gain.value = 0 // what's this about?
-				```
 
+        </div>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+
+        <div data-markdown>
+          ## Subtractive synthesis
+
+        </div>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+
+        <div data-markdown>
+          ## FM synthesis
+
+        </div>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+
+        <div data-markdown>
+          ## Delay and Verb
+
+        </div>
       </section>
       <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # Subtractive synthesis
-
-      </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # Modular synthesis
-
-      </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # FM synthesis
-
-      </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # Delay and Verb
-
-      </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        # Further reading
+        ## Further reading
         http://developer.telerik.com/featured/practical-web-audio/
 
         http://blog.chrislowis.co.uk/waw.html
