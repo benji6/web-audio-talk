@@ -495,7 +495,7 @@
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <div data-markdown>
-## Audio params
+## AudioParams
 Some AudioNode properties are AudioParams
 ```javascript
 gain.gain.value = 0
@@ -572,12 +572,11 @@ const lfoGain = audioContext.createGain()
 const lfo = audioContext.createOscillator()
 osc.connect(gain)
 lfo.frequency.value = 1
-lfo.connect(lfoGain)
-lfoGain.connect(osc.frequency)
+lfo.connect(lfoGain).connect(osc.frequency)
 lfoGain.gain.value = 1000
 lfo.start()
 osc.start()
-osc.stop(audioContext.currentTime + 3)
+osc.stop(audioContext.currentTime + 2)
 ```
         </div>
         <button onclick="(_ => {
@@ -586,12 +585,11 @@ osc.stop(audioContext.currentTime + 3)
           const lfo = audioContext.createOscillator()
           osc.connect(gain)
           lfo.frequency.value = 1
-          lfo.connect(lfoGain)
-          lfoGain.connect(osc.frequency)
+          lfo.connect(lfoGain).connect(osc.frequency)
           lfoGain.gain.value = 1000
           lfo.start()
           osc.start()
-          osc.stop(audioContext.currentTime + 3)
+          osc.stop(audioContext.currentTime + 2)
         })()">Sine LFO</button>
         <button onclick="(_ => {
           const osc = audioContext.createOscillator()
@@ -600,12 +598,11 @@ osc.stop(audioContext.currentTime + 3)
           osc.connect(gain)
           lfo.frequency.value = 1
           lfo.type = 'square'
-          lfo.connect(lfoGain)
-          lfoGain.connect(osc.frequency)
+          lfo.connect(lfoGain).connect(osc.frequency)
           lfoGain.gain.value = 1000
           lfo.start()
           osc.start()
-          osc.stop(audioContext.currentTime + 3)
+          osc.stop(audioContext.currentTime + 2)
         })()">Square LFO</button>
         <button onclick="(_ => {
           const osc = audioContext.createOscillator()
@@ -613,12 +610,11 @@ osc.stop(audioContext.currentTime + 3)
           const lfo = audioContext.createOscillator()
           osc.connect(gain)
           lfo.frequency.value = 10
-          lfo.connect(lfoGain)
-          lfoGain.connect(osc.frequency)
+          lfo.connect(lfoGain).connect(osc.frequency)
           lfoGain.gain.value = 1000
           lfo.start()
           osc.start()
-          osc.stop(audioContext.currentTime + 3)
+          osc.stop(audioContext.currentTime + 2)
         })()">Fast LFO</button>
         <button onclick="(_ => {
           const osc = audioContext.createOscillator()
@@ -626,25 +622,80 @@ osc.stop(audioContext.currentTime + 3)
           const lfo = audioContext.createOscillator()
           osc.connect(gain)
           lfo.frequency.value = 1000
-          lfo.connect(lfoGain)
-          lfoGain.connect(osc.frequency)
+          lfo.connect(lfoGain).connect(osc.frequency)
           lfoGain.gain.value = 1000
           lfo.start()
           osc.start()
-          osc.stop(audioContext.currentTime + 3)
+          osc.stop(audioContext.currentTime + 2)
         })()">Very Fast LFO</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+              Convolver (reverb)
+              Panner (left ear <---> right ear)
+              WaveShaper (distortion - think Nirvana)
+        </div>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
         <div data-markdown>
+          ## Filters
+          ```javascript
+          const osc = audioContext.createOscillator()
+          const filter = audioContext.createBiquadFilter()
+          const {currentTime} = audioContext
+          filter.type = 'lowpass' // default value
+          filter.Q.value = 10
+          filter.frequency.setValueAtTime(55, currentTime)
+          filter.frequency.linearRampToValueAtTime(7040, currentTime + 2)
+          osc.type = 'sawtooth'
+          osc.connect(filter).connect(gain)
+          osc.start()
+          osc.stop(currentTime + 2)
+          ```
+        </div>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const filter = audioContext.createBiquadFilter()
+          const {currentTime} = audioContext
+          filter.Q.value = 1
+          filter.frequency.setValueAtTime(55, currentTime)
+          filter.frequency.linearRampToValueAtTime(7040, currentTime + 2)
+          osc.type = 'sawtooth'
+          osc.connect(filter).connect(gain)
+          osc.start()
+          osc.stop(currentTime + 2)
+        })()">Lowpass Q = 1</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const filter = audioContext.createBiquadFilter()
+          const {currentTime} = audioContext
+          filter.Q.value = 12
+          filter.frequency.setValueAtTime(55, currentTime)
+          filter.frequency.linearRampToValueAtTime(7040, currentTime + 2)
+          osc.type = 'sawtooth'
+          osc.connect(filter).connect(gain)
+          osc.start()
+          osc.stop(currentTime + 2)
+        })()">Lowpass Q = 12</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const filter = audioContext.createBiquadFilter()
+          const {currentTime} = audioContext
+          filter.Q.value = 12
+          filter.type = 'highpass'
+          filter.frequency.setValueAtTime(55, currentTime)
+          filter.frequency.linearRampToValueAtTime(7040, currentTime + 2)
+          osc.type = 'sawtooth'
+          osc.connect(filter).connect(gain)
+          osc.start()
+          osc.stop(currentTime + 2)
+        })()">Highpass Q = 12</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
 
-              BiquadFilter (from that woosh sound in dreamy pads to that wah wah sound in Hendrix's guitar solos)
-              Convolver (reverb)
-              Delay (ECHO Echo echo...)
-              DynamicsCompressor (make loud things quiter)
-              Panner (left ear <---> right ear)
-              WaveShaper (distortion - think Nirvana)
-
+        <div data-markdown>
+          ## virtual-audio-graph
 
         </div>
       </section>
