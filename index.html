@@ -630,11 +630,67 @@ osc.stop(audioContext.currentTime + 2)
         })()">Very Fast LFO</button>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
+
         <div data-markdown>
-              Convolver (reverb)
-              Panner (left ear <---> right ear)
-              WaveShaper (distortion - think Nirvana)
+          ## Panning
+          ```javascript
+          const osc = audioContext.createOscillator()
+          const panner = audioContext.createStereoPanner()
+          const lfo = audioContext.createOscillator()
+          lfo.frequency.value = 1
+          lfo.connect(panner.pan)
+          osc.connect(panner).connect(gain)
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 2)
+          ```
         </div>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const panner = audioContext.createStereoPanner()
+          const lfo = audioContext.createOscillator()
+          lfo.frequency.value = 1
+          lfo.connect(panner.pan)
+          osc.connect(panner).connect(gain)
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 2)
+        })()">Sine LFO</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const panner = audioContext.createStereoPanner()
+          const lfo = audioContext.createOscillator()
+          lfo.type = 'square'
+          lfo.frequency.value = 1
+          lfo.connect(panner.pan)
+          osc.connect(panner).connect(gain)
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 2)
+        })()">Square LFO</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const panner = audioContext.createStereoPanner()
+          const lfo = audioContext.createOscillator()
+          lfo.type = 'square'
+          lfo.frequency.value = 10
+          lfo.connect(panner.pan)
+          osc.connect(panner).connect(gain)
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 2)
+        })()">Square LFO fast</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          const panner = audioContext.createStereoPanner()
+          const lfo = audioContext.createOscillator()
+          lfo.frequency.value = 110
+          lfo.connect(panner.pan)
+          osc.connect(panner).connect(gain)
+          lfo.start()
+          osc.start()
+          osc.stop(audioContext.currentTime + 2)
+        })()">Sine LFO very fast</button>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
