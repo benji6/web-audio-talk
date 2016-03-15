@@ -854,6 +854,47 @@ osc.stop(audioContext.currentTime + 2)
               source.start()
             })
         })()">High pitch</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              [
+                0, 4, 7, 0, 4, 7,
+                5, 9, 12, 5, 9, 12,
+                0, 4, 7, 0, 4, 7,
+                7, 11, 14, 7, 11, 14,
+                0, 4, 7, 0, 4, 7,
+                5, 9, 12, 5, 9, 12,
+                0, 4, 7, 0, 4, 7,
+                -40, -23, 24, -51, -31, 23, -33, -45, -34, 17
+              ].map((note, i) => {
+                const source = audioContext.createBufferSource()
+                source.detune.value = note * 100
+                source.buffer = buffer
+                source.connect(gain)
+                source.start(audioContext.currentTime + i * 0.15)
+              })
+            })
+        })()">Ummm....</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              const delay = audioContext.createDelay()
+              delay.delayTime.value = 0.2
+              const delayGain = audioContext.createGain()
+              delayGain.gain.value = 0.9
+              delayGain.connect(delay)
+              delay.connect(gain)
+              delay.connect(delayGain)
+              source.buffer = buffer
+              source.connect(delay)
+              source.start()
+            })
+        })()">Right....</button>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
@@ -871,10 +912,11 @@ osc.stop(audioContext.currentTime + 2)
         </div>
       </section>
       <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        ## Further reading
-        http://developer.telerik.com/featured/practical-web-audio/
-
+        ## Some cool stuff
         http://blog.chrislowis.co.uk/waw.html
+        http://developer.telerik.com/featured/practical-web-audio/
+        http://dinahmoelabs.com/plink
+        http://scratchthecampaign.com/
       </section>
     </div>
   </div>
