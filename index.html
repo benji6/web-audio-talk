@@ -437,80 +437,6 @@
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <div data-markdown>
-          # Delay
-          ```javascript
-          const noteTime = 0.1
-          const delay = audioContext.createDelay()
-          delay.delayTime.value = 2 * noteTime
-          const delayGain = audioContext.createGain()
-          delayGain.gain.value = 0.75
-          delayGain.connect(delay)
-          delay.connect(gain)
-          delay.connect(delayGain)
-          aMajorFrequencies.forEach((freq, i) => {
-            const osc = audioContext.createOscillator()
-            osc.frequency.value = freq
-            osc.connect(delayGain)
-            osc.connect(gain)
-            osc.start(audioContext.currentTime + i * noteTime)
-            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-          })
-          ```
-        </div>
-        <button onclick="(_ => {
-          const noteTime = 0.1
-          const delay = audioContext.createDelay()
-          delay.delayTime.value = 2 * noteTime
-          const delayGain = audioContext.createGain()
-          delayGain.gain.value = 0.75
-          delayGain.connect(delay)
-          delay.connect(gain)
-          delay.connect(delayGain)
-          aMajorFrequencies.forEach((freq, i) => {
-            const osc = audioContext.createOscillator()
-            osc.frequency.value = freq
-            osc.connect(delayGain)
-            osc.connect(gain)
-            osc.start(audioContext.currentTime + i * noteTime)
-            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-          })
-        })()">A Major</button>
-        <button onclick="(_ => {
-          const noteTime = 0.1
-          const delay = audioContext.createDelay()
-          delay.delayTime.value = 2 * noteTime
-          const delayGain = audioContext.createGain()
-          delayGain.gain.value = 0.75
-          delayGain.connect(delay)
-          delay.connect(gain)
-          delay.connect(delayGain)
-          aMinorFrequencies.forEach((freq, i) => {
-            const osc = audioContext.createOscillator()
-            osc.frequency.value = freq
-            osc.connect(delayGain)
-            osc.connect(gain)
-            osc.start(audioContext.currentTime + i * noteTime)
-            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
-          })
-        })()">A Minor</button>
-      </section>
-      <section data-background="assets/green-and-blue-sound-waves.jpg">
-        <h2>The audio graph</h2>
-
-        <p>We are creating a directional graph of AudioNodes</p>
-        <div data-markdown>
-					```
-	        source---->gain---->delay---->destination
-	          |          ^        |            ^
-	          |          |________|            |
-	          | _______________________________|
-
-					```
-				</div>
-
-      </section>
-      <section data-background="assets/green-and-blue-sound-waves.jpg">
-        <div data-markdown>
 ## AudioParams
 Some AudioNode properties are AudioParams
 ```javascript
@@ -646,9 +572,83 @@ osc.stop(audioContext.currentTime + 2)
         })()">Very Fast LFO</button>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <div data-markdown>
+          ## Delay
+          ```javascript
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMajorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+          ```
+        </div>
+        <button onclick="(_ => {
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMajorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+        })()">A Major</button>
+        <button onclick="(_ => {
+          const noteTime = 0.1
+          const delay = audioContext.createDelay()
+          delay.delayTime.value = 2 * noteTime
+          const delayGain = audioContext.createGain()
+          delayGain.gain.value = 0.75
+          delayGain.connect(delay)
+          delay.connect(gain)
+          delay.connect(delayGain)
+          aMinorFrequencies.forEach((freq, i) => {
+            const osc = audioContext.createOscillator()
+            osc.frequency.value = freq
+            osc.connect(delayGain)
+            osc.connect(gain)
+            osc.start(audioContext.currentTime + i * noteTime)
+            osc.stop(audioContext.currentTime + (i + 1) * noteTime)
+          })
+        })()">A Minor</button>
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <h2>The audio graph</h2>
+
+        <p>We are creating a directional graph of AudioNodes</p>
+        <div data-markdown>
+```
+              source---->gain---->delay---->destination
+                |          ^        |            ^
+                |          |________|            |
+                | _______________________________|
+
+```
+        </div>
+
+      </section>
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
 
         <div data-markdown>
-          ## Panning
+          ## Stereo Panner
           ```javascript
           const osc = audioContext.createOscillator()
           const panner = audioContext.createStereoPanner()
@@ -767,29 +767,107 @@ osc.stop(audioContext.currentTime + 2)
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
         <div data-markdown>
-          ## virtual-audio-graph
+          ## Other nodes are available!
 
         </div>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
         <div data-markdown>
-          ## Subtractive synthesis
-
+          ## Samples
+          ```javascript
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = 0 // default value
+              source.playbackRate.value = 1 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+          ```
         </div>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = 0 // default value
+              source.playbackRate.value = 1 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">Standard</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = 0 // default value
+              source.playbackRate.value = 2 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">Double speed</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = 0 // default value
+              source.playbackRate.value = 0.5 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">Half speed</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = -1200 // default value
+              source.playbackRate.value = 1 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">Low pitch</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = 1200 // default value
+              source.playbackRate.value = 1 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">High pitch</button>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
 
         <div data-markdown>
-          ## FM synthesis
+          ## AnalyzerNode
 
         </div>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
-
         <div data-markdown>
-          ## Delay and Verb
+          ## Personal projects
 
+          virtual-audio-graph
+          elemental
         </div>
       </section>
       <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
