@@ -65,8 +65,9 @@
 
         - Music theory
         - Web Audio API
-        - Earcons and practical ideas
-        - Full-blown audio synthesis
+          - Audio graph
+          - Audio nodes
+          - Audio params
       </section>
       <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
         ## Preamble
@@ -84,10 +85,10 @@
 
         The specification is fairly stable and most features are implemented in modern browsers
       </section>
-      <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
-        ## What is sound?
+      <section data-background="assets/green-and-blue-sound-waves.jpg">
+        <h2>What is sound?</h2>
 
-        Vibrations transmitted through an elastic solid or a liquid or gas, with frequencies in the approximate range of 20 to 20,000 hertz, capable of being detected by human organs of hearing. (The Free Dictionary)
+        <p class="fragment">In physics, sound is a vibration that propagates as a typically audible mechanical wave of pressure and displacement, through a medium such as air or water. In physiology and psychology, sound is the reception of such waves and their perception by the brain. (Wikipedia)</p>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <h2>Everything is a wave</h2>
@@ -113,9 +114,6 @@
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <h2>All waves are sine waves</h2>
-
-        <p>You can construct all waves from sine waves of different pitches. Look up Fourier transforms for more info</p>
-
         <pre>
      1 -|         ,-'''-.
         |      ,-'       `-.
@@ -213,7 +211,13 @@
           osc.connect(gain)
           osc.start(audioContext.currentTime)
           osc.stop(audioContext.currentTime + 1)
-        })()">Click me</button>
+        })()">Now</button>
+        <button onclick="(_ => {
+          const osc = audioContext.createOscillator()
+          osc.connect(gain)
+          osc.start(audioContext.currentTime + 1)
+          osc.stop(audioContext.currentTime + 2)
+        })()">Now + 1</button>
       </section>
       <section data-markdown data-background="assets/green-and-blue-sound-waves.jpg">
         ## Equal temperament
@@ -440,20 +444,19 @@
 ## AudioParams
 Some AudioNode properties are AudioParams
 ```javascript
-gain.gain.value = 0
+gain.gain.value = 1
 osc.frequency.value = 440
-delay.delayTime.value = 0.2
 ```
         </div>
       </section>
       <section data-background="assets/green-and-blue-sound-waves.jpg">
         <div data-markdown>
           ## AudioParams
-          AudioParams have a couple of cool methods for controlling their values over time
+          AudioParams have a few of cool methods for controlling their values over time
 ```javascript
 const osc = audioContext.createOscillator()
-osc.connect(gain)
 const {currentTime} = audioContext
+osc.connect(gain)
 osc.frequency.setValueAtTime(110, currentTime)
 osc.frequency.linearRampToValueAtTime(1760, currentTime + 1)
 osc.start(currentTime)
@@ -512,10 +515,10 @@ osc.stop(currentTime + 1)
 const osc = audioContext.createOscillator()
 const lfoGain = audioContext.createGain()
 const lfo = audioContext.createOscillator()
-osc.connect(gain)
 lfo.frequency.value = 1
-lfo.connect(lfoGain).connect(osc.frequency)
 lfoGain.gain.value = 1000
+osc.connect(gain)
+lfo.connect(lfoGain).connect(osc.frequency)
 lfo.start()
 osc.start()
 osc.stop(audioContext.currentTime + 2)
@@ -575,14 +578,13 @@ osc.stop(audioContext.currentTime + 2)
         <div data-markdown>
           ## Delay
           ```javascript
-          const noteTime = 0.1
           const delay = audioContext.createDelay()
-          delay.delayTime.value = 2 * noteTime
           const delayGain = audioContext.createGain()
+          const noteTime = 0.1
+          delay.delayTime.value = 2 * noteTime
           delayGain.gain.value = 0.75
-          delayGain.connect(delay)
           delay.connect(gain)
-          delay.connect(delayGain)
+          delay.connect(delayGain).connect(delay)
           aMajorFrequencies.forEach((freq, i) => {
             const osc = audioContext.createOscillator()
             osc.frequency.value = freq
@@ -594,14 +596,13 @@ osc.stop(audioContext.currentTime + 2)
           ```
         </div>
         <button onclick="(_ => {
-          const noteTime = 0.1
           const delay = audioContext.createDelay()
-          delay.delayTime.value = 2 * noteTime
           const delayGain = audioContext.createGain()
+          const noteTime = 0.1
+          delay.delayTime.value = 2 * noteTime
           delayGain.gain.value = 0.75
-          delayGain.connect(delay)
           delay.connect(gain)
-          delay.connect(delayGain)
+          delay.connect(delayGain).connect(delay)
           aMajorFrequencies.forEach((freq, i) => {
             const osc = audioContext.createOscillator()
             osc.frequency.value = freq
@@ -826,19 +827,6 @@ osc.stop(audioContext.currentTime + 2)
             .then(data => audioContext.decodeAudioData(data))
             .then(buffer => {
               const source = audioContext.createBufferSource()
-              source.detune.value = -1200 // default value
-              source.playbackRate.value = 1 // default value
-              source.buffer = buffer
-              source.connect(gain)
-              source.start()
-            })
-        })()">Low pitch</button>
-        <button onclick="(_ => {
-          fetch('assets/kitten.wav')
-            .then(response => response.arrayBuffer())
-            .then(data => audioContext.decodeAudioData(data))
-            .then(buffer => {
-              const source = audioContext.createBufferSource()
               source.detune.value = 1200 // default value
               source.playbackRate.value = 1 // default value
               source.buffer = buffer
@@ -846,6 +834,19 @@ osc.stop(audioContext.currentTime + 2)
               source.start()
             })
         })()">High pitch</button>
+        <button onclick="(_ => {
+          fetch('assets/kitten.wav')
+            .then(response => response.arrayBuffer())
+            .then(data => audioContext.decodeAudioData(data))
+            .then(buffer => {
+              const source = audioContext.createBufferSource()
+              source.detune.value = -1200 // default value
+              source.playbackRate.value = 1 // default value
+              source.buffer = buffer
+              source.connect(gain)
+              source.start()
+            })
+        })()">Low pitch</button>
         <button onclick="(_ => {
           fetch('assets/kitten.wav')
             .then(response => response.arrayBuffer())
